@@ -1,0 +1,1580 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>বিক্রয় ডেটা ড্যাশবোর্ড (Modern Theme)</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* নতুন কালার ভেরিয়েবল (Modern Theme) */
+        :root {
+            /* সাধারণ হাইলাইট কালার */
+            --highlight-color-1: #1abc9c; /* ফিরোজা (Turquoise) - Primary */
+            --highlight-color-2: #3498db; /* নীল (Blue) - Secondary */
+            --sidebar-bg-color: #34495e; /* গাঢ় ছাই রঙ - Base */
+            
+            /* ফর্ম ও বাটনের জন্য নতুন কালার */
+            --input-bg: #ecf0f1; /* ইনপুটের জন্য হালকা ধূসর ব্যাকগ্রাউন্ড */
+            --input-border: #bdc3c7; /* হালকা ধূসর বর্ডার */
+            --button-submit: #1abc9c; /* উজ্জ্বল ফিরোজা */
+            --button-submit-dark: #16a085; /* গাঢ় ফিরোজা */
+            
+            /* টোটাল ডিসপ্লে কালার */
+            --total-display-bg: #e8f8f5; 
+            --total-display-color: #16a085;
+            
+            /* ছোট বাটন কালার */
+            --btn-primary: #3498db;
+            --btn-success: #2ecc71;
+            --btn-cancel: #e74c3c;
+            
+            /* টেবিলের রঙ পরিবর্তন */
+            --table-header-bg: #009688; /* নতুন হেডার কালার: নীল-সবুজ (Teal) */
+            --table-total-color: #007bff;
+        }
+
+        /* ফন্ট এবং বেসিক রিসেট */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Noto Sans Bengali', sans-serif;
+            background-color: #f4f7f9;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* প্রধান কন্টেইনার */
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* সাইডবার স্টাইল */
+        .sidebar {
+            width: 250px;
+            background-color: var(--sidebar-bg-color); /* গাঢ় ব্যাকগ্রাউন্ড */
+            color: #ecf0f1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo h2 {
+            text-align: center;
+            margin-bottom: 40px;
+            color: var(--highlight-color-1); /* ফিরোজা লোগো কালার */
+        }
+
+        .nav-links ul {
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-bottom: 10px;
+        }
+
+        /* --- সংশোধিত অংশ: নেভিগেশন লিঙ্ক স্টাইল (আইকন এবং টেক্সটের জন্য নতুন স্টাইল) --- */
+        .nav-links a {
+            /* টেক্সটের জন্য উজ্জ্বল সাদা কালার */
+            color: #ffffff; 
+            text-decoration: none;
+            padding: 12px 15px;
+            
+            display: flex;
+            align-items: center;
+            gap: 12px; 
+            white-space: nowrap; 
+            
+            border-radius: 8px;
+            transition: background-color 0.3s, color 0.3s;
+            font-weight: 600; 
+        }
+
+        /* --- সংশোধিত: আইকনগুলির জন্য নতুন স্টাইল (Base64 SVG ধারক) --- */
+        .nav-links .nav-icon {
+            /* Base64 SVG এর জন্য জায়গা তৈরি করা */
+            display: inline-block;
+            width: 20px; 
+            height: 20px; 
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            line-height: 1;
+            color: transparent !important; /* টেক্সট হাইড করা */
+            
+            /* উজ্জ্বল টেক্সট ঠিক রেখে, আইকনগুলিকে Base64 দ্বারা লোড করা হবে */
+        }
+
+        /* Base64 ডেটা লোড করার জন্য আলাদা ক্লাস (স্বচ্ছতা বজায় রেখে) */
+        /* 1. লাইভ বিক্রয় ডেটা (ঠিক থাকবে) */
+        .nav-links li:nth-child(1) .nav-icon {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="3" y="10" width="4" height="11" fill="%231ABC9C"/><rect x="10" y="3" width="4" height="18" fill="%233498DB"/><rect x="17" y="6" width="4" height="15" fill="%232ECC71"/></svg>');
+        }
+        /* 2. নতুন এন্ট্রি (📄➕ ডকুমেন্ট সহ প্লাস - সবুজ) */
+        .nav-links li:nth-child(2) .nav-icon {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%232ECC71" d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zm-2 7H8v-2h3v-3h2v3h3v2h-3v3h-2v-3z" /></svg>');
+        }
+        /* 3. আমার পোস্ট (🧑 ভরাট প্রোফাইল/মাথা - নীল/হলুদ) */
+        .nav-links li:nth-child(3) .nav-icon {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="7" r="3" fill="%23F39C12"/><path fill="%233498DB" d="M12 14c-4.42 0-8 1.79-8 4v2h16v-2c0-2.21-3.58-4-8-4z"/></svg>');
+        }
+        /* 4. ডেটা ফিল্টার (🔍 নতুন আইকন) */
+        .nav-links li:nth-child(4) .nav-icon {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23F39C12" d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></svg>');
+        }
+        /* 5. এডমিন প্যানেল (ঠিক থাকবে) */
+        .nav-links li:nth-child(5) .nav-icon {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23F39C12" d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99l-2.75-2.75-1.42 1.41 4.17 4.17 7.08-7.07-1.41-1.41-5.67 5.67z" opacity="0.8"/><path fill="%2334495E" d="M12 21.99c-4.22-1.18-7.5-5.18-7.5-9.99v-5.46L12 3.19l7.5 3.35v5.45c0 4.81-3.28 8.81-7.5 9.99z" opacity="0.3"/></svg>');
+        }
+        /* 6. লগ আউট (🚪➡️ দরজা থেকে বের হওয়া তীর - লাল) */
+        .nav-links li:nth-child(6) .nav-icon {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23E74C3C" d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>');
+        }
+        
+        /* হোভার এবং অ্যাক্টিভ অবস্থায় কালার */
+        .nav-links a:hover,
+        .nav-links li.active a {
+            /* অ্যাক্টিভ হলে টেক্সট গাঢ় ছাই রঙ হবে */
+            background-color: var(--highlight-color-1); /* ফিরোজা হাইলাইট */
+            color: var(--sidebar-bg-color); /* টেক্সট গাঢ় হবে */
+            font-weight: 800; 
+        }
+
+        /* হোভার এবং অ্যাক্টিভ অবস্থায় আইকন কালার পরিবর্তন */
+        .nav-links a:hover .nav-icon,
+        .nav-links li.active a .nav-icon {
+            /* এখানে আর color পরিবর্তন হবে না, কারণ আমরা Base64 ব্যবহার করছি */
+            color: transparent !important; 
+        }
+        
+        .user-info {
+            margin-top: auto;
+            padding: 18px 12px;
+            border-top: 2px solid rgba(26, 188, 156, 0.3); 
+            background: rgba(0, 0, 0, 0.1); 
+            border-radius: 8px;
+            font-size: 0.9em;
+        }
+
+        .user-info strong {
+            color: var(--highlight-color-2); 
+            font-size: 1.05em;
+        }
+
+        .user-measurement {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .measurement-label {
+            font-size: 0.8em;
+            color: var(--highlight-color-1); 
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .measurement-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .measurement-fill {
+            height: 100%;
+            background: var(--highlight-color-1); 
+            border-radius: 4px;
+            transition: width 0.4s ease;
+        }
+
+        .measurement-value {
+            font-size: 0.85em;
+            color: #ecf0f1;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        /* মেইন কন্টেন্ট স্টাইল */
+        .main-content {
+            flex-grow: 1;
+            padding: 30px;
+        }
+
+        /* হেডার স্টাইল */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        h3 {
+            margin-bottom: 20px;
+            color: var(--sidebar-bg-color);
+            border-left: 5px solid var(--highlight-color-1); 
+            padding-left: 10px;
+        }
+
+        /* ফর্ম স্টাইল */
+        .entry-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            max-width: 720px;
+            margin: 18px auto 8px auto;
+            padding: 25px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .form-group label {
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--sidebar-bg-color); 
+            display: block;
+        }
+
+        /* ইনপুট ফিল্ড স্টাইল */
+        .entry-form input[type="text"],
+        .entry-form input[type="number"],
+        .entry-form input[type="file"],
+        /* নতুন ফিল্টার ইনপুট স্টাইল */
+        .filter-group input[type="text"],
+        .filter-group input[type="date"],
+        .filter-group select {
+            width: 100%;
+            padding: 10px 12px; /* প্যাডিং কমানো হলো */
+            border: 1px solid var(--input-border); 
+            border-radius: 6px; 
+            background: var(--input-bg); 
+            transition: all 0.3s ease;
+            font-size: 0.95em; /* ফন্ট সাইজ কমানো হলো */
+            height: 40px; /* উচ্চতা ফিক্সড করা হলো */
+            color: #2c3e50;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.03);
+            font-family: 'Noto Sans Bengali', sans-serif;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .entry-form input[type="text"]:focus,
+        .entry-form input[type="number"]:focus,
+        .entry-form input[type="file"]:focus,
+        .filter-group input:focus,
+        .filter-group select:focus {
+            outline: none;
+            border-color: var(--highlight-color-1); 
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(26, 188, 156, 0.2); 
+        }
+
+
+        .total-display {
+            grid-column: 1 / -1; 
+            padding: 16px 20px;
+            background: var(--total-display-bg); 
+            border: 1px solid var(--total-display-color);
+            border-radius: 8px;
+            font-size: 1.2em;
+            text-align: center;
+            color: var(--total-display-color); 
+            font-weight: 800;
+        }
+
+        /* SUBMIT BUTTON STYLE */
+        .submit-btn, .filter-btn {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, var(--button-submit), var(--button-submit-dark)); 
+            color: #fff;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 800;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 8px 15px rgba(26, 188, 156, 0.3);
+        }
+
+        .submit-btn:hover, .filter-btn:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 12px 25px rgba(26, 188, 156, 0.4); 
+            opacity: 0.95;
+        }
+        
+        /* ছোট বাটনগুলির ডিজাইন */
+        .btn-small {
+            color: white;
+            border: none;
+            padding: 8px 12px; /* প্যাডিং কমানো হলো */
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em; /* ফন্ট সাইজ কমানো হলো */
+            font-weight: 600;
+            transition: all 0.3s ease;
+            min-height: 40px; /* উচ্চতা কমানো হলো */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-small:hover {
+            opacity: 0.95;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        /* নতুন ইউজার বাটন (Primary) - নীল */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--btn-primary), #2980b9);
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.2);
+        }
+
+        /* সংরক্ষণ বাটন (Success) - সবুজ */
+        .btn-success {
+            background: linear-gradient(135deg, var(--btn-success), #27ae60);
+            box-shadow: 0 4px 10px rgba(46, 204, 113, 0.2);
+        }
+
+        /* বাতিল/ডিলিট বাটন (Cancel) - লাল */
+        .btn-cancel {
+            background: linear-gradient(135deg, var(--btn-cancel), #c0392b);
+            box-shadow: 0 4px 10px rgba(231, 76, 60, 0.2);
+        }
+        
+        /* ইউজার সিলেক্ট ও অ্যাড ইনপুট স্টাইল */
+        .user-select-styled {
+            background: white;
+            color: #2c3e50;
+            border: 2px solid var(--highlight-color-2); 
+            border-radius: 8px;
+            padding: 8px 10px; /* প্যাডিং কমানো হলো */
+            font-weight: 600;
+            transition: all 0.3s ease;
+            -webkit-appearance: none;
+            appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg fill="%232980b9" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); 
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            background-size: 20px;
+            min-height: 40px; /* উচ্চতা কমানো হলো */
+            font-size: 0.9em; /* ফন্ট সাইজ কমানো হলো */
+            width: 100%;
+        }
+
+        .user-select-styled:hover {
+            border-color: var(--highlight-color-1);
+        }
+
+        .user-add-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid var(--highlight-color-2); 
+            border-radius: 8px;
+            font-size: 0.9em;
+            font-family: inherit;
+            color: #2c3e50;
+            transition: all 0.3s ease;
+            background: white;
+            min-height: 40px;
+        }
+
+        .user-add-input:focus {
+            outline: none;
+            border-color: var(--highlight-color-1);
+            box-shadow: 0 0 8px rgba(26, 188, 156, 0.3);
+            background: #fff;
+        }
+        
+        /* --- সংশোধিত ফিল্টার অপশন স্টাইল --- */
+        .filter-options {
+            display: flex; /* Flexbox ব্যবহার করা হয়েছে */
+            gap: 15px; /* গ্যাপ কমানো হয়েছে */
+            align-items: flex-end; /* উপাদানগুলোকে নিচে সারিবদ্ধ করা হয়েছে */
+            padding: 20px; /* প্যাডিং কমানো হয়েছে */
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            margin-bottom: 25px;
+            border: 1px solid #e0e0e0;
+            flex-wrap: wrap; /* ছোট স্ক্রিনের জন্য wrap করা হয়েছে */
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px; /* গ্যাপ কমানো হয়েছে */
+            flex-grow: 1; /* ফ্লেক্স গ্রো দিয়ে জায়গা নেওয়া হবে */
+            min-width: 120px; /* ন্যূনতম প্রস্থ সেট করা হয়েছে */
+        }
+        
+        /* ডেট ইনপুট এর জন্য ফ্লেক্সবক্স লেআউট ব্যবহার করে পাশাপাশি রাখা হয়েছে */
+        .date-range-container {
+            display: flex;
+            gap: 15px;
+            flex-grow: 2; /* ডেট সেকশনের জন্য বেশি জায়গা */
+            min-width: 250px;
+        }
+        
+        .filter-group label {
+            font-weight: 700;
+            color: var(--sidebar-bg-color);
+            font-size: 0.9em;
+            margin-bottom: 0;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 10px;
+            min-width: 180px; /* বাটনের জন্য ন্যূনতম প্রস্থ */
+        }
+        
+        .filter-actions .btn-small {
+            flex-grow: 1;
+            padding: 10px;
+            min-height: 40px;
+        }
+        
+        .date-input {
+            flex-grow: 1;
+        }
+        /* --- সংশোধিত ফিল্টার অপশন স্টাইল শেষ --- */
+
+        /* টেবিল স্টাইল */
+        .table-container {
+            overflow-x: auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        #live-sales-table, #my-sales-table, #filter-results-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        /* টেবিল হেডার: বোল্ড এবং কালার চেঞ্জ */
+        #live-sales-table thead th, #my-sales-table thead th, #filter-results-table thead th {
+            /* নতুন হেডার ব্যাকগ্রাউন্ড: নীল-সবুজ (Teal) */
+            background: linear-gradient(135deg, #009688, #00796b); 
+            color: white;
+            font-weight: 700; 
+            text-transform: uppercase;
+            font-size: 0.85em; /* ফন্ট সাইজ কমানো হলো */
+            padding: 14px 12px; /* প্যাডিং কমানো হলো */
+        }
+        
+        /* টেবিল বডি টেক্সট: বোল্ড করা হলো */
+        #live-sales-table td, #my-sales-table td, #filter-results-table td {
+            padding: 12px 12px; /* প্যাডিং কমানো হলো */
+            text-align: left;
+            border-bottom: 1px solid #ecf0f1;
+            color: #333333; 
+            font-weight: 600; 
+            font-size: 0.9em; /* ফন্ট সাইজ কমানো হলো */
+        }
+
+        #my-sales-table tbody tr .delete-btn {
+            padding: 6px 10px; /* প্যাডিং কমানো হলো */
+            font-size: 1em; 
+            min-height: 36px;
+            min-width: 36px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* লাইভ সেলের মোট টাকা কলাম - সবুজ */
+        #live-sales-table td:nth-child(7), #filter-results-table td:nth-child(7) { 
+            color: var(--btn-success) !important; 
+        }
+
+        /* আমার সেলের মোট টাকা কলাম - উজ্জ্বল নীল কালার */
+        #my-sales-table td:nth-child(7) { 
+            color: var(--table-total-color) !important; 
+            font-weight: 700;
+        }
+
+        #my-sales-table tbody tr:hover, #filter-results-table tbody tr:hover {
+            background-color: #e8f8f5;
+            box-shadow: inset 3px 0 0 var(--highlight-color-1); 
+        }
+        
+        .product-img {
+            width: 40px; /* সাইজ কমানো হলো */
+            height: 40px; /* সাইজ কমানো হলো */
+            object-fit: cover;
+            border-radius: 6px; 
+            display: inline-block;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+
+        .product-img.round {
+            border-radius: 12px;
+        }
+        
+        /* --- লাইভ টেবিলের মোট বিক্রয় ডিসপ্লে (#sidebar-total) --- */
+        .side-total {
+            display: flex !important; 
+            justify-content: space-between;
+            align-items: center;
+            background: #ffffff; 
+            padding: 16px 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .side-total:hover {
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* --- মোট টাকার ফন্ট স্টাইল (উভয় ডিসপ্লের জন্য) --- */
+        .table-header-total-amount { 
+            font-weight: 900; 
+            font-size: 1.2em; /* ফন্ট সাইজ সামান্য কমানো হয়েছে */
+            color: var(--highlight-color-1); 
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        /* লেবেলের ফন্ট স্টাইল (উভয় ডিসপ্লের জন্য) */
+        .table-header-total-label {
+            font-weight: 700;
+            font-size: 1em; /* ফন্ট সাইজ সামান্য কমানো হয়েছে */
+            color: var(--sidebar-bg-color); 
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* --- আমার পোস্টের মোট বিক্রয় ডিসপ্লে (#my-table-header-total) ফন্ট সাইজ পরিবর্তন --- */
+        #my-table-header-total, #filter-table-header-total {
+            display: flex !important; 
+            justify-content: space-between;
+            align-items: center;
+            background: #ffffff; 
+            padding: 16px 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08); 
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        #my-table-header-total:hover, #filter-table-header-total:hover {
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+
+        /* টোস্ট এবং মডাল স্টাইল */
+        #toast-container {
+            position: fixed;
+            right: 20px;
+            top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        .toast {
+            pointer-events: auto;
+            min-width: 220px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 700;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            animation: toast-in 320ms ease forwards;
+        }
+
+        @keyframes toast-in {
+            from { opacity: 0; transform: translateY(-8px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .toast-success { background: linear-gradient(90deg,var(--btn-success),#27ae60); }
+        .toast-error { background: linear-gradient(90deg,var(--btn-cancel),#c0392b); }
+        .toast-info { background: linear-gradient(90deg,var(--btn-primary),#2980b9); }
+
+        .toast .toast-close {
+            float: right;
+            margin-left: 8px;
+            opacity: 0.9;
+            cursor: pointer;
+        }
+        
+        /* মডাল স্টাইল */
+        #modal-overlay {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.45);
+            z-index: 10050; 
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 200ms ease, visibility 200ms ease;
+        }
+
+        #modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .modal-box {
+            background: #ffffff;
+            padding: 20px 18px;
+            border-radius: 12px;
+            box-shadow: 0 18px 60px rgba(12,20,40,0.25);
+            max-width: 520px;
+            width: calc(100% - 48px);
+            text-align: center;
+        }
+
+        .modal-message {
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 18px;
+            font-size: 1.05em;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            align-items: center;
+            margin-top: 6px;
+        }
+
+        .modal-btn {
+            padding: 10px 16px;
+            border-radius: 8px;
+            min-width: 110px;
+            font-weight: 800;
+            cursor: pointer;
+            border: none;
+            font-size: 0.95em;
+            color: white;
+        }
+
+        .modal-btn.ok {
+            background: linear-gradient(90deg,var(--btn-success),#27ae60);
+        }
+
+        .modal-btn.cancel {
+            background: linear-gradient(90deg,#95a5a6,#7f8c8d);
+        }
+
+        @media (max-width: 900px) {
+            .filter-options {
+                /* 900px এর নিচে ফিল্টার গুলোকে কলাম হিসেবে দেখানো হবে */
+                flex-direction: column; 
+                align-items: stretch;
+            }
+            .date-range-container {
+                flex-grow: unset;
+                min-width: unset;
+                width: 100%;
+            }
+            .filter-actions {
+                min-width: unset;
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .dashboard-container {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+            }
+            .entry-form {
+                grid-template-columns: 1fr;
+            }
+            /* 600px এর নিচে ডেট রেঞ্জও কলাম হিসেবে দেখাবে */
+            .date-range-container {
+                flex-direction: column; 
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        
+        <aside class="sidebar">
+            <div class="logo">
+                <h2>দোকান ম্যানেজমেন্ট</h2>
+            </div>
+            <nav class="nav-links">
+                <ul>
+                    <li class="active"><a href="#live-data"><span class="nav-icon"></span> লাইভ বিক্রয় ডেটা</a></li>
+                    <li><a href="#data-entry"><span class="nav-icon"></span> নতুন এন্ট্রি</a></li>
+                    <li id="my-posts-link"><a href="#my-posts"><span class="nav-icon"></span> আমার পোস্ট</a></li>
+                    <li><a href="#data-filter"><span class="nav-icon"></span> ডেটা ফিল্টার</a></li>
+                    <li class="admin-only" style="display: none;"><a href="#admin-panel"><span class="nav-icon"></span> এডমিন প্যানেল</a></li>
+                    <li><a href="#" id="logout-btn"><span class="nav-icon"></span> লগ আউট</a></li>
+                </ul>
+            </nav>
+            <div class="user-info">
+                
+                <p style="text-align:center;margin-bottom:8px;">
+                    <strong>স্বাগতম</strong><br>
+                    <select id="user-select" aria-label="ব্যবহারকারী নির্বাচন" class="user-select-styled"></select>
+                </p>
+                <p style="display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;">
+                    <button id="add-user-btn" title="নতুন ব্যবহারকারী যোগ করুন" class="btn-small btn-primary">নতুন</button>
+                </p>
+                <div id="user-add-form" style="display:none;margin-top:10px;padding:10px;background:rgba(255,255,255,0.05);border-radius:8px;">
+                    <input id="user-add-input" type="text" placeholder="নাম লিখুন" class="user-add-input" autocomplete="off">
+                    <div style="display:flex;gap:8px;margin-top:8px;justify-content:center;">
+                        <button id="user-add-save" class="btn-small btn-success">সংরক্ষণ</button>
+                        <button id="user-add-cancel" class="btn-small btn-cancel">বাতিল</button>
+                    </div>
+                </div>
+                <p class="status active" id="user-status" style="text-align:center;margin-top:8px;">✅ সক্রিয়</p>
+                <div class="user-measurement">
+                    <div class="measurement-label">পোস্ট</div>
+                    <div class="measurement-bar">
+                        <div class="measurement-fill" id="user-posts-meter" style="width:0%"></div>
+                    </div>
+                    <div class="measurement-value"><span id="user-posts-count">0</span>টি</div>
+                </div>
+                <input type="file" id="user-avatar-input" accept="image/*" style="display:none;">
+            </div>
+        </aside>
+
+        <main class="main-content">
+            
+            <header class="dashboard-header">
+                <h1>ড্যাশবোর্ড - লাইভ ডেটা ট্র্যাকিং</h1>
+                <div class="header-right">
+                    <span id="current-time">সময়: 00:00:00</span>
+                    <button class="notification-btn" style="background-color: var(--highlight-color-2); color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer;">🔔</button>
+                </div>
+            </header>
+
+            <section id="content-area">
+                
+                <div id="live-data" class="content-section active">
+                    <h3>📊 সকল সক্রিয় পোস্টের লাইভ টেবিল</h3>
+                    <div id="sidebar-total" class="side-total">
+                        <span class="table-header-total-label">🔝 লাইভ মোট বিক্রয়</span>
+                        <span class="table-header-total-amount">0.00 টাকা</span>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table id="live-sales-table">
+                            <thead>
+                                <tr>
+                                    <th>ক্রমিক আইডি</th>
+                                    <th>ডেট</th>
+                                    <th>ছবি</th>
+                                    <th>প্রোডাক্ট নাম</th>
+                                    <th>মূল্য</th>
+                                    <th>পিস</th>
+                                    <th>মোট টাকা</th>
+                                    <th>সময়</th>
+                                    <th>পোস্টকারী</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="data-entry" class="content-section" style="display: none;">
+                    <h3>📄➕ নতুন বিক্রয় এন্ট্রি করুন</h3>
+                    <form id="sales-entry-form" class="entry-form">
+                        <div class="form-group">
+                            <label for="product-name">প্রোডাক্ট নাম:</label>
+                            <input type="text" id="product-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="product-price">প্রোডাক্ট মূল্য:</label>
+                            <input type="number" id="product-price" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="product-qty">প্রোডাক্ট পিস:</label>
+                            <input type="number" id="product-qty" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="product-pic">পিকচারের ছবি:</label>
+                            <input type="file" id="product-pic" accept="image/*" required>
+                        </div>
+                        <div class="form-group total-display">
+                            <label>মোট টাকা:</label>
+                            <span id="total-amount-display">0.00 টাকা</span>
+                        </div>
+                        <button type="submit" class="submit-btn">পোস্ট করুন</button>
+                    </form>
+                </div>
+                
+                <div id="my-posts" class="content-section" style="display: none;">
+                    <h3>🧑 আমার করা এন্ট্রি</h3>
+                    <div id="my-table-header-total" class="table-header-total">
+                        <span class="table-header-total-label">🔝 আমার মোট বিক্রয়</span>
+                        <span class="table-header-total-amount">0.00 টাকা</span>
+                    </div>
+                    <div class="table-container">
+                        <table id="my-sales-table">
+                            </table>
+                    </div>
+                </div>
+
+                <div id="data-filter" class="content-section" style="display: none;">
+                    <h3>🔍 ডেট/নাম অনুযায়ী ডেটা ফিল্টার ও অনুসন্ধান</h3>
+                    
+                    <div id="filter-options" class="filter-options">
+                        
+                        <div class="date-range-container">
+                             <div class="filter-group">
+                                <label for="start-date">শুরুর ডেট</label>
+                                <input type="date" id="start-date">
+                            </div>
+                            <div class="filter-group">
+                                <label for="end-date">শেষ ডেট</label>
+                                <input type="date" id="end-date">
+                            </div>
+                        </div>
+
+                        <div class="filter-group">
+                            <label for="filter-poster-name">পোস্টকারী</label>
+                            <select id="filter-poster-name">
+                                <option value="">সকল</option>
+                                </select>
+                        </div>
+
+                        <div class="filter-actions">
+                            <button id="apply-filter-btn" class="btn-small btn-success">ফিল্টার</button>
+                            <button id="reset-filter-btn" class="btn-small btn-cancel">রিসেট</button>
+                        </div>
+                    </div>
+
+                    <div id="filter-table-header-total" class="table-header-total" style="display: none;">
+                        <span class="table-header-total-label">ফলাফলের মোট বিক্রয়</span>
+                        <span class="table-header-total-amount" id="filter-total-amount">0.00 টাকা</span>
+                    </div>
+
+                    <div class="table-container">
+                        <table id="filter-results-table">
+                            <thead>
+                                <tr>
+                                    <th>ক্রমিক আইডি</th>
+                                    <th>ডেট</th>
+                                    <th>ছবি</th>
+                                    <th>প্রোডাক্ট নাম</th>
+                                    <th>মূল্য</th>
+                                    <th>পিস</th>
+                                    <th>মোট টাকা</th>
+                                    <th>সময়</th>
+                                    <th>পোস্টকারী</th>
+                                </tr>
+                            </thead>
+                            <tbody id="filter-results-body">
+                                <tr><td colspan="9" style="text-align:center;">উপরে ফিল্টারিং অপশন ব্যবহার করে অনুসন্ধান করুন।</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                </section>
+        </main>
+    </div>
+
+    <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
+    <div id="modal-overlay" role="dialog" aria-modal="true" aria-hidden="true">
+        <div class="modal-box" role="document">
+            <div class="modal-message" id="modal-message">মেসেজ</div>
+            <div class="modal-actions">
+                <button class="modal-btn ok" id="modal-ok">ঠিক আছে</button>
+                <button class="modal-btn cancel" id="modal-cancel">বাতিল</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+    // --- Toast helper ---
+    function showToast(message, type = 'success', timeout = 3500) {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.innerHTML = `<span class="toast-message">${message}</span><span class="toast-close">✕</span>`;
+        container.appendChild(toast);
+
+        const remove = () => {
+            toast.style.transition = 'opacity 220ms, transform 220ms';
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(-6px) scale(0.98)';
+            setTimeout(() => { try { container.removeChild(toast); } catch (e) {} }, 240);
+        };
+
+        toast.querySelector('.toast-close').addEventListener('click', remove);
+        if (timeout > 0) setTimeout(remove, timeout);
+    }
+    
+    // --- Centered Confirm / Modal helper ---
+    function showConfirm(message, okText = 'ঠিক আছে', cancelText = 'বাতিল') {
+        return new Promise((resolve) => {
+            const overlay = document.getElementById('modal-overlay');
+            const msgEl = document.getElementById('modal-message');
+            const okBtn = document.getElementById('modal-ok');
+            const cancelBtn = document.getElementById('modal-cancel');
+            if (!overlay || !msgEl || !okBtn || !cancelBtn) { resolve(false); return; }
+
+            msgEl.textContent = message;
+            okBtn.textContent = okText;
+            cancelBtn.textContent = cancelText;
+
+            overlay.classList.add('active');
+            overlay.setAttribute('aria-hidden', 'false');
+
+            const previousFocus = document.activeElement;
+            okBtn.focus();
+
+            function cleanup() {
+                overlay.classList.remove('active');
+                overlay.setAttribute('aria-hidden', 'true');
+                okBtn.removeEventListener('click', onOk);
+                cancelBtn.removeEventListener('click', onCancel);
+                document.removeEventListener('keydown', onKeydown);
+                if (previousFocus && previousFocus.focus) previousFocus.focus();
+            }
+
+            function onOk() { cleanup(); resolve(true); }
+            function onCancel() { cleanup(); resolve(false); }
+
+            function onKeydown(e) {
+                if (e.key === 'Escape') { e.preventDefault(); onCancel(); }
+                if (e.key === 'Enter') { e.preventDefault(); onOk(); }
+            }
+
+            okBtn.addEventListener('click', onOk);
+            cancelBtn.addEventListener('click', onCancel);
+            document.addEventListener('keydown', onKeydown);
+        });
+    }
+
+    // --- Helper for Date Conversion (dd/mm/yyyy to yyyy-mm-dd for comparison) ---
+    function dateToComparable(dateStr) {
+        if (!dateStr) return null;
+        const parts = dateStr.split('/');
+        if (parts.length === 3) {
+            // Assumes dd/mm/yyyy format based on toLocaleDateString('bn-BD')
+            const day = parts[0].padStart(2, '0');
+            const month = parts[1].padStart(2, '0');
+            const year = parts[2];
+            return year + month + day;
+        }
+        return null;
+    }
+
+    // প্রয়োজনীয় HTML এলিমেন্টগুলো ধরে নেওয়া
+    const currentTimeSpan = document.getElementById('current-time');
+    const navLinks = document.querySelectorAll('.nav-links a');
+    const contentSections = document.querySelectorAll('.content-section');
+    const priceInput = document.getElementById('product-price');
+    const qtyInput = document.getElementById('product-qty');
+    const totalDisplay = document.getElementById('total-amount-display');
+    const entryForm = document.getElementById('sales-entry-form');
+
+    const userSelect = document.getElementById('user-select');
+    const addUserBtn = document.getElementById('add-user-btn');
+    const userAddForm = document.getElementById('user-add-form');
+    const userAddInput = document.getElementById('user-add-input');
+    const userAddSaveBtn = document.getElementById('user-add-save');
+    const userAddCancelBtn = document.getElementById('user-add-cancel');
+    const userStatusEl = document.getElementById('user-status');
+    const userPostsMeter = document.getElementById('user-posts-meter');
+    const userPostsCountEl = document.getElementById('user-posts-count');
+    const logoutBtn = document.getElementById('logout-btn');
+
+    // টেবিল রেফারেন্স
+    const liveSalesTable = document.getElementById('live-sales-table');
+    const mySalesTable = document.getElementById('my-sales-table'); 
+    const filterResultsBody = document.getElementById('filter-results-body');
+    
+    // টোটাল ডিসপ্লে এলিমেন্ট
+    const myTableHeaderTotal = document.getElementById('my-table-header-total');
+    const myTableHeaderTotalAmount = myTableHeaderTotal.querySelector('.table-header-total-amount');
+    
+    const liveSalesTotalEl = document.getElementById('sidebar-total');
+    const liveSalesTotalAmountEl = document.querySelector('#sidebar-total .table-header-total-amount'); 
+
+    // নতুন ফিল্টার এলিমেন্ট
+    const startDateInput = document.getElementById('start-date');
+    const endDateInput = document.getElementById('end-date');
+    const filterPosterNameSelect = document.getElementById('filter-poster-name');
+    const applyFilterBtn = document.getElementById('apply-filter-btn');
+    const resetFilterBtn = document.getElementById('reset-filter-btn');
+    const filterTableHeaderTotal = document.getElementById('filter-table-header-total');
+    const filterTotalAmountEl = document.getElementById('filter-total-amount');
+    
+    // LocalStorage keys
+    const STORAGE_USERS_KEY = 'sales_users';
+    const STORAGE_POSTS_KEY = 'sales_posts';
+    const STORAGE_CURRENT_USER_KEY = 'sales_current_user_id';
+
+    // ইউজার ও পোস্ট ডেটা (ইন-মেমরি, persisted to localStorage)
+    let users = [];
+    let userCounter = 1; 
+    let currentUser = null;
+
+    let posts = [];
+    let entryCounter = 1; 
+
+    // --- Persistence helpers ---
+    function loadUsers() {
+        try {
+            const raw = localStorage.getItem(STORAGE_USERS_KEY);
+            if (!raw) return []; 
+            return JSON.parse(raw);
+        } catch (e) { return []; }
+    }
+
+    function saveUsers() {
+        localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
+    }
+
+    function loadPosts() {
+        try {
+            const raw = localStorage.getItem(STORAGE_POSTS_KEY);
+            if (!raw) return [];
+            return JSON.parse(raw);
+        } catch (e) { return []; }
+    }
+
+    function savePosts() {
+        localStorage.setItem(STORAGE_POSTS_KEY, JSON.stringify(posts));
+    }
+
+    function loadCurrentUserId() {
+        try { 
+            const id = localStorage.getItem(STORAGE_CURRENT_USER_KEY);
+            return id ? parseInt(id) : null;
+        } catch (e) { return null; }
+    }
+
+    function saveCurrentUserId(id) {
+        localStorage.setItem(STORAGE_CURRENT_USER_KEY, id);
+    }
+    
+    // --- Data Initialization ---
+    function initializeData() {
+        users = loadUsers();
+        posts = loadPosts();
+
+        // ইউজার কাউন্টার সেট করা
+        if (users.length > 0) {
+            userCounter = Math.max(...users.map(u => u.id)) + 1;
+        } else {
+            // যদি কোনো ইউজার না থাকে, একটি ডিফল্ট ইউজার তৈরি করুন
+            const defaultUser = { id: userCounter++, name: 'এডমিন', status: 'সক্রিয়', postsCount: 0, isAdmin: true };
+            users.push(defaultUser);
+            saveUsers();
+        }
+
+        // পোস্ট কাউন্টার সেট করা
+        if (posts.length > 0) {
+            entryCounter = Math.max(...posts.map(p => p.id)) + 1;
+        }
+
+        // বর্তমান ইউজার সেট করা
+        const currentUserId = loadCurrentUserId();
+        currentUser = users.find(u => u.id === currentUserId) || users[0];
+        if (currentUser) {
+            saveCurrentUserId(currentUser.id);
+        }
+    }
+
+    // --- UI Update & Rendering ---
+
+    // বর্তমান সময় আপডেট করা
+    function updateCurrentTime() {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString('bn-BD', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+        currentTimeSpan.textContent = `সময়: ${timeString}`;
+    }
+    setInterval(updateCurrentTime, 1000);
+    updateCurrentTime();
+
+    // ইউজার সিলেক্ট ড্রপডাউন আপডেট করা
+    function renderUserSelect() {
+        userSelect.innerHTML = '';
+        users.forEach(user => {
+            const option = document.createElement('option');
+            option.value = user.id;
+            option.textContent = user.name + (user.isAdmin ? ' (এডমিন)' : '');
+            userSelect.appendChild(option);
+        });
+
+        if (currentUser) {
+            userSelect.value = currentUser.id;
+            updateUserInfo(currentUser);
+        }
+        
+        const adminLink = document.querySelector('.admin-only');
+        if (adminLink) {
+            adminLink.style.display = currentUser && currentUser.isAdmin ? 'list-item' : 'none';
+        }
+
+        // ফিল্টার পোস্টার নেম সিলেক্ট আপডেট করা
+        renderFilterUserSelect();
+    }
+    
+    // ফিল্টার ইউজার সিলেক্ট ড্রপডাউন আপডেট করা
+    function renderFilterUserSelect() {
+        filterPosterNameSelect.innerHTML = '<option value="">সকল</option>'; // ডিফল্ট অপশন
+        users.forEach(user => {
+            const option = document.createElement('option');
+            option.value = user.id;
+            option.textContent = user.name;
+            filterPosterNameSelect.appendChild(option);
+        });
+    }
+    
+    // ইউজার ইনফো ও পোস্ট মিটার আপডেট করা
+    function updateUserInfo(user) {
+        userStatusEl.textContent = user.status === 'সক্রিয়' ? '✅ সক্রিয়' : '❌ নিষ্ক্রিয়';
+        userStatusEl.classList.toggle('active', user.status === 'সক্রিয়');
+        
+        const myPosts = posts.filter(p => p.posterId === user.id);
+        const postsCount = myPosts.length;
+        
+        userPostsCountEl.textContent = postsCount;
+        
+        const maxPosts = 50; 
+        const meterPercentage = Math.min(100, (postsCount / maxPosts) * 100);
+        userPostsMeter.style.width = `${meterPercentage}%`;
+    }
+
+    // লাইভ সেলস টেবিল রেন্ডার করা
+    function renderLiveSalesTable() {
+        const currentBody = liveSalesTable.querySelector('tbody');
+        if (currentBody) currentBody.remove();
+        
+        const newBody = liveSalesTable.createTBody();
+        let totalSales = 0;
+
+        posts.sort((a, b) => b.id - a.id); 
+
+        posts.forEach((post) => {
+            const row = newBody.insertRow();
+            const poster = users.find(u => u.id === post.posterId) || { name: 'অজানা' };
+            totalSales += post.totalAmount;
+
+            row.innerHTML = `
+                <td>${post.id}</td>
+                <td>${post.date}</td>
+                <td><img src="${post.pictureData}" alt="Product" class="product-img"></td>
+                <td>${post.productName}</td>
+                <td style="text-align:right;">${post.price.toFixed(2)} টাকা</td>
+                <td style="text-align:center;">${post.qty}</td>
+                <td style="text-align:right;">${post.totalAmount.toFixed(2)} টাকা</td>
+                <td>${post.time}</td>
+                <td>${poster.name}</td>
+            `;
+        });
+        
+        if(liveSalesTotalAmountEl) {
+            liveSalesTotalAmountEl.textContent = `${totalSales.toFixed(2)} টাকা`;
+        }
+    }
+    
+    // আমার পোস্ট টেবিল রেন্ডার করা
+    function renderMySalesTable() {
+        if (!currentUser) { 
+            const myTableBody = mySalesTable.querySelector('tbody');
+            if (myTableBody) myTableBody.remove();
+            myTableHeaderTotal.style.display = 'none';
+            return; 
+        }
+        
+        const myPosts = posts.filter(p => p.posterId === currentUser.id);
+        
+        const myTableBody = mySalesTable.querySelector('tbody');
+        if (myTableBody) myTableBody.remove();
+
+        if (mySalesTable.querySelectorAll('thead').length === 0) {
+            mySalesTable.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>আইডি</th>
+                        <th>ডেট</th>
+                        <th>ছবি</th>
+                        <th>প্রোডাক্ট নাম</th>
+                        <th>মূল্য</th>
+                        <th>পিস</th>
+                        <th>মোট টাকা</th>
+                        <th>অ্যাকশন</th>
+                    </tr>
+                </thead>
+            `;
+        }
+
+        const newBody = mySalesTable.createTBody();
+        let myTotalSales = 0;
+        
+        myPosts.sort((a, b) => b.id - a.id); 
+
+        myPosts.forEach((post) => {
+            const row = newBody.insertRow();
+            myTotalSales += post.totalAmount;
+
+            row.innerHTML = `
+                <td>${post.id}</td>
+                <td>${post.date}</td>
+                <td><img src="${post.pictureData}" alt="Product" class="product-img round"></td>
+                <td>${post.productName}</td>
+                <td style="text-align:right;">${post.price.toFixed(2)} টাকা</td>
+                <td style="text-align:center;">${post.qty}</td>
+                <td style="text-align:right;">${post.totalAmount.toFixed(2)} টাকা</td>
+                <td><button class="btn-small btn-cancel delete-btn" data-post-id="${post.id}" title="ডিলিট করুন">🗑️</button></td>
+            `;
+        });
+        
+        if (myPosts.length > 0) {
+            myTableHeaderTotal.style.display = 'flex';
+            myTableHeaderTotalAmount.textContent = `${myTotalSales.toFixed(2)} টাকা`;
+        } else {
+            myTableHeaderTotal.style.display = 'none';
+        }
+
+        newBody.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const postId = parseInt(e.target.dataset.postId);
+                deletePost(postId);
+            });
+        });
+        
+        updateUserInfo(currentUser);
+    }
+    
+    // ডিলিট পোস্ট ফাংশন
+    async function deletePost(postId) {
+        const confirmed = await showConfirm(`আপনি কি সত্যিই আইডি ${postId}-এর এই পোস্টটি ডিলিট করতে চান?`);
+        
+        if (confirmed) {
+            const initialLength = posts.length;
+            posts = posts.filter(p => p.id !== postId);
+            
+            if (posts.length < initialLength) {
+                savePosts();
+                renderLiveSalesTable();
+                renderMySalesTable();
+                showToast(`পোস্ট আইডি ${postId} সফলভাবে ডিলিট করা হয়েছে।`, 'error');
+            }
+        }
+    }
+
+    // --- নতুন ফিল্টার এবং অনুসন্ধান লজিক ---
+    
+    function applyFilter() {
+        const startDateValue = startDateInput.value;
+        const endDateValue = endDateInput.value;
+        const posterId = filterPosterNameSelect.value ? parseInt(filterPosterNameSelect.value) : null;
+        
+        // ইনপুট থেকে পাওয়া ডেটগুলো তুলনযোগ্য ফরমেটে রূপান্তর করা
+        const startComparable = startDateValue ? dateToComparable(new Date(startDateValue).toLocaleDateString('bn-BD')) : null;
+        const endComparable = endDateValue ? dateToComparable(new Date(endDateValue).toLocaleDateString('bn-BD')) : null;
+        
+        let filteredPosts = posts.filter(post => {
+            let matches = true;
+            const postDateComparable = dateToComparable(post.date);
+
+            // 1. ডেট রেঞ্জ ফিল্টার
+            if (startComparable && postDateComparable < startComparable) {
+                matches = false;
+            }
+            if (endComparable && postDateComparable > endComparable) {
+                matches = false;
+            }
+
+            // 2. পোস্টার ফিল্টার
+            if (posterId !== null && matches) {
+                if (post.posterId !== posterId) {
+                    matches = false;
+                }
+            }
+
+            return matches;
+        });
+
+        // যদি ডেট রেঞ্জ ইনভার্টেড হয়
+        if (startComparable && endComparable && startComparable > endComparable) {
+             showToast('শুরুর ডেট শেষের ডেটের থেকে পরে হতে পারে না।', 'error');
+             filteredPosts = []; 
+        }
+
+        renderFilterResults(filteredPosts);
+    }
+
+    function renderFilterResults(results) {
+        filterResultsBody.innerHTML = '';
+        let totalSales = 0;
+        
+        results.sort((a, b) => b.id - a.id); 
+
+        if (results.length === 0) {
+            filterTableHeaderTotal.style.display = 'none';
+            filterResultsBody.innerHTML = `
+                <tr><td colspan="9" style="text-align:center; color: ${results.length === 0 && (startDateInput.value || endDateInput.value || filterPosterNameSelect.value) ? 'red' : '#333333'};">
+                ${results.length === 0 && (startDateInput.value || endDateInput.value || filterPosterNameSelect.value) ? 'অনুসন্ধানের সাথে কোনো ডেটা মেলেনি।' : 'উপরে ফিল্টারিং অপশন ব্যবহার করে অনুসন্ধান করুন।'}
+                </td></tr>`;
+            
+        } else {
+            results.forEach((post) => {
+                const row = filterResultsBody.insertRow();
+                const poster = users.find(u => u.id === post.posterId) || { name: 'অজানা' };
+                totalSales += post.totalAmount;
+
+                row.innerHTML = `
+                    <td>${post.id}</td>
+                    <td>${post.date}</td>
+                    <td><img src="${post.pictureData}" alt="Product" class="product-img"></td>
+                    <td>${post.productName}</td>
+                    <td style="text-align:right;">${post.price.toFixed(2)} টাকা</td>
+                    <td style="text-align:center;">${post.qty}</td>
+                    <td style="text-align:right;">${post.totalAmount.toFixed(2)} টাকা</td>
+                    <td>${post.time}</td>
+                    <td>${poster.name}</td>
+                `;
+            });
+
+            filterTableHeaderTotal.style.display = 'flex';
+            filterTotalAmountEl.textContent = `${totalSales.toFixed(2)} টাকা`;
+        }
+    }
+    
+    function resetFilter() {
+        startDateInput.value = '';
+        endDateInput.value = '';
+        filterPosterNameSelect.value = '';
+        renderFilterResults([]);
+        showToast('ফিল্টার অপশন রিসেট করা হলো।', 'info', 2000);
+    }
+
+    // ফিল্টার বাটন ইভেন্ট লিসেনার
+    applyFilterBtn.addEventListener('click', applyFilter);
+    resetFilterBtn.addEventListener('click', resetFilter);
+
+    // --- Event Listeners & Logic ---
+    
+    // নেভিগেশন লজিক
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetId = e.currentTarget.getAttribute('href').substring(1); 
+            
+            // সাইডবার অ্যাক্টিভ ক্লাস
+            document.querySelectorAll('.nav-links li').forEach(l => l.classList.remove('active'));
+            e.currentTarget.parentElement.classList.add('active');
+
+            // কন্টেন্ট সেকশন টগল
+            contentSections.forEach(section => {
+                section.style.display = 'none';
+                if (section.id === targetId) {
+                    section.style.display = 'block';
+                    if (targetId === 'live-data') {
+                        renderLiveSalesTable();
+                    } else if (targetId === 'my-posts') {
+                        renderMySalesTable();
+                    } else if (targetId === 'data-filter') {
+                        // ডেটা ফিল্টার পেজে গেলে ইউজার লিস্ট আপডেট করা
+                        renderFilterUserSelect(); 
+                        // শুধুমাত্র ডেট ফিল্ড ক্লিয়ার করে, ফলাফল ডিসপ্লে ক্লিয়ার করবে, ফিল্টার অপশন দেখা থাকবে 
+                        startDateInput.value = '';
+                        endDateInput.value = '';
+                        filterPosterNameSelect.value = '';
+                        renderFilterResults([]); 
+                    }
+                }
+            });
+            window.scrollTo(0, 0);
+        });
+    });
+
+    // প্রোডাক্ট মূল্য/পরিমাণ ইনপুট পরিবর্তনের সাথে মোট টাকা হিসাব করা
+    function updateTotalPrice() {
+        const price = parseFloat(priceInput.value) || 0;
+        const qty = parseInt(qtyInput.value) || 0;
+        const total = price * qty;
+        totalDisplay.textContent = `${total.toFixed(2)} টাকা`;
+    }
+
+    priceInput.addEventListener('input', updateTotalPrice);
+    qtyInput.addEventListener('input', updateTotalPrice);
+
+
+    // ফর্ম সাবমিট হ্যান্ডলার
+    entryForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const productName = document.getElementById('product-name').value.trim();
+        const price = parseFloat(priceInput.value);
+        const qty = parseInt(qtyInput.value);
+        const picInput = document.getElementById('product-pic');
+        const file = picInput.files[0];
+
+        if (!currentUser) {
+            showToast('দয়া করে একজন ব্যবহারকারী নির্বাচন করুন।', 'error');
+            return;
+        }
+
+        if (!productName || price <= 0 || qty <= 0 || !file) {
+            showToast('সব ফিল্ড পূরণ করুন এবং সঠিক তথ্য দিন।', 'error');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const now = new Date();
+            const newPost = {
+                id: entryCounter++,
+                // ডেট ফরম্যাট dd/mm/yyyy
+                date: now.toLocaleDateString('bn-BD'), 
+                time: now.toLocaleTimeString('bn-BD', { hour: '2-digit', minute: '2-digit' }),
+                productName: productName,
+                price: price,
+                qty: qty,
+                totalAmount: price * qty,
+                pictureData: event.target.result, // Base64 image data
+                posterId: currentUser.id,
+            };
+
+            posts.push(newPost);
+            savePosts();
+            showToast('নতুন বিক্রয় এন্ট্রি সফলভাবে যুক্ত হয়েছে!', 'success');
+            
+            // UI আপডেট ও ফর্ম রিসেট
+            entryForm.reset();
+            totalDisplay.textContent = '0.00 টাকা';
+            
+            const liveDataLink = document.querySelector('a[href="#live-data"]');
+            if (liveDataLink) {
+                liveDataLink.click();
+            } else {
+                renderLiveSalesTable();
+            }
+
+            updateUserInfo(currentUser); 
+        };
+        reader.readAsDataURL(file);
+    });
+
+    // ইউজার নির্বাচন পরিবর্তন হলে
+    userSelect.addEventListener('change', (e) => {
+        const selectedId = parseInt(e.target.value);
+        currentUser = users.find(u => u.id === selectedId);
+        if (currentUser) {
+            saveCurrentUserId(currentUser.id);
+            updateUserInfo(currentUser);
+            showToast(`ব্যবহারকারী পরিবর্তন করে: ${currentUser.name}`, 'info', 2000);
+            
+            const activeSection = document.querySelector('.content-section[style*="block"]');
+            if (activeSection) {
+                if (activeSection.id === 'live-data') {
+                    renderLiveSalesTable();
+                } else if (activeSection.id === 'my-posts') {
+                    renderMySalesTable();
+                } else if (activeSection.id === 'data-filter') {
+                    renderFilterUserSelect(); 
+                    // ফিল্টার অপশনগুলো রিসেট করা
+                    startDateInput.value = '';
+                    endDateInput.value = '';
+                    filterPosterNameSelect.value = '';
+                    renderFilterResults([]); 
+                }
+            }
+        }
+    });
+
+    // নতুন ইউজার যোগ করা (ফর্ম টগল)
+    addUserBtn.addEventListener('click', () => {
+        userAddForm.style.display = 'block';
+        addUserBtn.style.display = 'none';
+        userAddInput.focus();
+    });
+
+    userAddCancelBtn.addEventListener('click', () => {
+        userAddForm.style.display = 'none';
+        addUserBtn.style.display = 'block';
+        userAddInput.value = '';
+    });
+
+    // নতুন ইউজার সেভ করা
+    userAddSaveBtn.addEventListener('click', () => {
+        const newUserName = userAddInput.value.trim();
+        if (newUserName && newUserName.length > 1) {
+            const newUser = { 
+                id: userCounter++, 
+                name: newUserName, 
+                status: 'সক্রিয়', 
+                postsCount: 0,
+                isAdmin: false 
+            };
+            
+            users.push(newUser);
+            saveUsers(); 
+            
+            currentUser = newUser;
+            saveCurrentUserId(currentUser.id); 
+
+            renderUserSelect();
+            userAddCancelBtn.click(); 
+            showToast(`নতুন ব্যবহারকারী '${newUserName}' যুক্ত হয়েছে।`, 'success');
+
+        } else {
+            showToast('নামটি অন্তত 2 অক্ষরের হতে হবে।', 'error');
+        }
+    });
+
+    // লগ আউট সিমুলেশন
+    logoutBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const confirmed = await showConfirm('আপনি কি লগ আউট করতে চান?');
+        if (confirmed) {
+            localStorage.removeItem(STORAGE_CURRENT_USER_KEY);
+            window.location.reload(); 
+        }
+    });
+    
+    // --- Initial Load ---
+    initializeData();
+    renderUserSelect();
+    
+    // ডিফল্টভাবে লাইভ ডেটা সেকশন দেখানো
+    const defaultLink = document.querySelector('a[href="#live-data"]');
+    if (defaultLink) {
+        defaultLink.click();
+    } else {
+         renderLiveSalesTable();
+    }
+});
+    </script>
+</body>
+</html>
